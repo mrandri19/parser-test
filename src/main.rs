@@ -3,11 +3,11 @@ use std::env;
 fn main() {
     let input = env::args().nth(1).expect("No argument");
 
-    let parsed = parse(input);
-    print!("{:?}\n", parsed);
+    let parsed = parse(&input);
+    println!("{:?}", parsed);
 }
 
-fn parse(input: String) -> Result<String, String> {
+fn parse<'a>(input: &'a str) -> Result<String, String> {
     if input.len() == 0 {
         return Err("Empty input".to_string());
     }
@@ -68,7 +68,7 @@ fn expr(index: &mut usize, input_str: &Vec<char>, mut output: String) -> Result<
     }
 
     // Check if we finished
-    print!("Did we finish?\n");
+    println!("Did we finish?");
 
     // index_plus_one is basically asking wheter there is more to parse
     if finished(&(*index + 1), input_str) {
@@ -91,7 +91,7 @@ fn is_operator(ch: &char) -> bool {
 fn inc_index(index: &mut usize, input_str: &Vec<char>) -> bool {
     print!("{} -> ", *index);
     *index += 1;
-    print!("{}\n", *index);
+    println!("{}", *index);
     println!("calling finished() with args {}, {}",
              *index,
              (*input_str).len());
@@ -114,32 +114,38 @@ fn finished(index: &usize, input_str: &Vec<char>) -> bool {
 
 #[test]
 fn empty_input() {
-    assert_eq!(Err("Empty input".to_string()), parse("".to_string()));
+    assert_eq!(Err("Empty input".to_string()), parse(""));
 }
 
 #[test]
 fn single_digit() {
-    assert_eq!(Ok("1".to_string()), parse("1".to_string()));
+    assert_eq!(Ok("1".to_string()), parse("1"));
 }
+
 #[test]
 fn single_not_digit() {
-    assert_eq!(Err("char: 0 should be a digit".to_string()),
-               parse("d".to_string()));
+    assert_eq!(Err("char: 0 should be a digit".to_string()), parse("d"));
 }
+
 #[test]
 fn expr_first_not_operator() {
     assert_eq!(Err("The first char of an expr should be an operator".to_string()),
-               parse("1d".to_string()));
+               parse("1d"));
 }
 
 #[test]
 fn incomplete_expr() {
     assert_eq!(Err("Digit expected at position: 3".to_string()),
-               parse("1+".to_string()));
+               parse("1+"));
 }
 
 #[test]
 fn expr_second_not_digit() {
     assert_eq!(Err("The second char of an expr should be a digit".to_string()),
-               parse("1+d".to_string()));
+               parse("1+d"));
+}
+
+#[test]
+fn multiple_expr() {
+    assert_eq!(Ok("1+1+1+1+1+1+1".to_string()), parse("1+1+1+1+1+1+1"));
 }
