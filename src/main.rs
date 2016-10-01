@@ -41,7 +41,6 @@ fn parse<'a>(input: &'a str) -> Result<f64, String> {
 
 // expr : operator number [expr]
 fn expr(index: &mut usize, input_str: &Vec<char>, counter: &mut f64) -> Result<f64, String> {
-    let backtrack = *index;
     let current_operator: char;
 
     if is_operator(&(*input_str)[*index]) {
